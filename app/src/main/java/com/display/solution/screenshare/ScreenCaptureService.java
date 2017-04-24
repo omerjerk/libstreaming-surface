@@ -18,7 +18,7 @@ import net.majorkernelpanic.streaming.SessionBuilder;
 import net.majorkernelpanic.streaming.audio.AudioQuality;
 import net.majorkernelpanic.streaming.video.VideoQuality;
 
-public class ScreenCaptureService extends Service {
+public class ScreenCaptureService extends Service implements Session.Callback {
 
     private static final String TAG = "ScreenCaptureService";
 
@@ -42,7 +42,7 @@ public class ScreenCaptureService extends Service {
         calculateScreenDimens();
 
         mSession = SessionBuilder.getInstance()
-//                .setCallback(this)
+                .setCallback(this)
                 .setPreviewOrientation(90)
                 .setContext(getApplicationContext())
                 .setAudioEncoder(SessionBuilder.AUDIO_NONE)
@@ -53,11 +53,6 @@ public class ScreenCaptureService extends Service {
                 .build();
 
         mSession.configure();
-
-        createVirtualDisplay();
-
-        Log.d(TAG, mSession.getSessionDescription());
-        mSession.start();
 
         return START_NOT_STICKY;
     }
@@ -86,5 +81,38 @@ public class ScreenCaptureService extends Service {
                 WIDTH, HEIGHT, 50,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 mSession.getSurface(), null, null);
+    }
+
+    @Override
+    public void onBitrateUpdate(long bitrate) {
+
+    }
+
+    @Override
+    public void onSessionError(int reason, int streamType, Exception e) {
+
+    }
+
+    @Override
+    public void onPreviewStarted() {
+
+    }
+
+    @Override
+    public void onSessionConfigured() {
+        Log.d(TAG, "Session Configured");
+        createVirtualDisplay();
+
+        Log.d(TAG, mSession.getSessionDescription());
+        mSession.start();
+    }
+
+    @Override
+    public void onSessionStarted() {
+    }
+
+    @Override
+    public void onSessionStopped() {
+
     }
 }

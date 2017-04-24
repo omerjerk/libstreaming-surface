@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("NewApi")
     public void start(View v) {
-        startActivityForResult(
-                mMediaProjectionManager.createScreenCaptureIntent(),
-                REQUEST_MEDIA_PROJECTION);
+        startScreenCapture();
     }
 }

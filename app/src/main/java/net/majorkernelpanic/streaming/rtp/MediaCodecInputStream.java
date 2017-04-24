@@ -70,7 +70,7 @@ public class MediaCodecInputStream extends InputStream {
 				while (!Thread.interrupted() && !mClosed) {
 					mIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 500000);
 					if (mIndex>=0 ){
-						//Log.d(TAG,"Index: "+mIndex+" Time: "+mBufferInfo.presentationTimeUs+" size: "+mBufferInfo.size);
+						Log.d(TAG,"Index: "+mIndex+" Time: "+mBufferInfo.presentationTimeUs+" size: "+mBufferInfo.size);
 						mBuffer = mBuffers[mIndex];
 						mBuffer.position(0);
 						break;

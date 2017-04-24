@@ -95,7 +95,6 @@ public abstract class VideoStream extends MediaStream {
 	@SuppressLint("InlinedApi")
 	public VideoStream(int camera) {
 		super();
-//		setCamera(camera);
 	}
 
 	/**
@@ -223,6 +222,7 @@ public abstract class VideoStream extends MediaStream {
 	 * to apply your configuration of the stream.
 	 */
 	public synchronized void configure() throws IllegalStateException, IOException {
+		configureEncoder();
 		super.configure();
 		mOrientation = mRequestedOrientation;
 	}	
@@ -382,6 +382,9 @@ public abstract class VideoStream extends MediaStream {
 		mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
 		mMediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 		mCInputSurface = mMediaCodec.createInputSurface();
+		if (mCInputSurface == null) {
+			throw new NullPointerException("Encoder input surface is null");
+		}
 	}
 
 	/**

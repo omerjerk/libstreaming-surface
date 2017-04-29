@@ -222,6 +222,7 @@ public abstract class VideoStream extends MediaStream {
 	 * to apply your configuration of the stream.
 	 */
 	public synchronized void configure() throws IllegalStateException, IOException {
+		Log.e(TAG, "Configuring encoder");
 		configureEncoder();
 		super.configure();
 		mOrientation = mRequestedOrientation;
@@ -374,7 +375,7 @@ public abstract class VideoStream extends MediaStream {
 		EncoderDebugger debugger = EncoderDebugger.debug(mSettings, mQuality.resX, mQuality.resY);
 		Log.d(TAG, "codec name - " + debugger.getEncoderName());
 		mMediaCodec = MediaCodec.createByCodecName(debugger.getEncoderName());
-//		mMediaCodec = MediaCodec.createEncoderByType("video/avc");
+		Log.d(TAG, "resX " + mQuality.resX + " resY = " + mQuality.resY + " br = " + mQuality.bitrate + " fr = " + mQuality.framerate);
 		MediaFormat mediaFormat = MediaFormat.createVideoFormat("video/avc", mQuality.resX, mQuality.resY);
 		mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, mQuality.bitrate);
 		mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mQuality.framerate);

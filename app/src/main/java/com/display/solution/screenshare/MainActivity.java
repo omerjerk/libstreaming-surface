@@ -2,14 +2,18 @@ package com.display.solution.screenshare;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.display.VirtualDisplay;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import net.majorkernelpanic.streaming.rtsp.RtspServer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +31,13 @@ public class MainActivity extends AppCompatActivity {
 
         mMediaProjectionManager = (MediaProjectionManager)
                 getSystemService(MEDIA_PROJECTION_SERVICE);
+
+        // Sets the port of the RTSP server to 1234
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putString(RtspServer.KEY_PORT, String.valueOf(1234));
+        editor.commit();
+
+        Log.d(TAG, "ip = " + Utils.getLocalIpAddress(this));
     }
 
     @SuppressLint("NewApi")
@@ -53,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("NewApi")
     public void start(View v) {
+        startService(new Intent(this,RtspServer.class));
         startScreenCapture();
     }
 }

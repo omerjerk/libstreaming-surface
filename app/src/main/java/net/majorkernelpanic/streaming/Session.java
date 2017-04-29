@@ -36,6 +36,7 @@ import android.hardware.Camera.CameraInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Surface;
 
 /**
@@ -158,7 +159,7 @@ public class Session {
 		 * {@link Callback#onSessionError(int, int, Exception)} will be
 		 * called instead of  {@link Callback#onSessionConfigured()}.
 		 */
-		public void onSessionConfigured();
+		public void onSessionConfigured(Surface surface);
 
 		/** 
 		 * Called when the streams of the session have correctly been started.
@@ -427,6 +428,7 @@ public class Session {
 		if (stream!=null && !stream.isStreaming()) {
 			try {
 				InetAddress destination =  InetAddress.getByName(mDestination);
+				Log.e(TAG, "syncStart dest="+destination);
 				stream.setTimeToLive(mTimeToLive);
 				stream.setDestinationAddress(destination);
 				stream.start();
@@ -458,6 +460,8 @@ public class Session {
 				postError(ERROR_OTHER, id, e);
 				throw e;
 			}
+		} else {
+			Log.e(TAG, "Else of syncStart");
 		}
 
 	}	
@@ -586,7 +590,7 @@ public class Session {
 			@Override
 			public void run() {
 				if (mCallback != null) {
-					mCallback.onSessionConfigured(); 
+					mCallback.onSessionConfigured(mVideoStream.getSurface());
 				}
 			}
 		});

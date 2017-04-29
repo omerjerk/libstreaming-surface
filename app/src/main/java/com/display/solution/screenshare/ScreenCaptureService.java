@@ -11,11 +11,13 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 import android.view.WindowManager;
 
 import net.majorkernelpanic.streaming.Session;
 import net.majorkernelpanic.streaming.SessionBuilder;
 import net.majorkernelpanic.streaming.audio.AudioQuality;
+import net.majorkernelpanic.streaming.rtsp.RtspServer;
 import net.majorkernelpanic.streaming.video.VideoQuality;
 
 public class ScreenCaptureService extends Service implements Session.Callback {
@@ -30,7 +32,7 @@ public class ScreenCaptureService extends Service implements Session.Callback {
     static int deviceWidth;
     static int deviceHeight;
     Point resolution = new Point();
-    final float resolutionRatio = 0.25f;
+    final float resolutionRatio = 0.1f;
 
     private Session mSession;
 
@@ -40,19 +42,19 @@ public class ScreenCaptureService extends Service implements Session.Callback {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         calculateScreenDimens();
-
-        mSession = SessionBuilder.getInstance()
+        SessionBuilder.getInstance()
                 .setCallback(this)
                 .setPreviewOrientation(90)
                 .setContext(getApplicationContext())
                 .setAudioEncoder(SessionBuilder.AUDIO_NONE)
                 .setAudioQuality(new AudioQuality(16000, 32000))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
-                .setVideoQuality(new VideoQuality(320,240,20,500000))
-                .setDestination("localhost")
-                .build();
+                .setVideoQuality(new VideoQuality(resolution.x,resolution.y,20,500000))
+                .setDestination("192.168.0.104");
 
-        mSession.configure();
+//        mSession.configure();
+
+        startService(new Intent(this, RtspServer.class));
 
         return START_NOT_STICKY;
     }
@@ -75,12 +77,15 @@ public class ScreenCaptureService extends Service implements Session.Callback {
     }
 
     @SuppressLint("NewApi")
-    public void createVirtualDisplay() {
+    public void createVirtualDisplay(Surface surface) {
         DisplayManager mDisplayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        if (surface == null) {
+            throw new RuntimeException("Surface is null. Can't proceed");
+        }
         virtualDisplay = MainActivity.mMediaProjection.createVirtualDisplay("Remote Droid",
-                WIDTH, HEIGHT, 50,
+                resolution.x, resolution.y, 50,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                mSession.getSurface(), null, null);
+                surface, null, null);
     }
 
     @Override
@@ -99,12 +104,12 @@ public class ScreenCaptureService extends Service implements Session.Callback {
     }
 
     @Override
-    public void onSessionConfigured() {
+    public void onSessionConfigured(Surface surface) {
         Log.d(TAG, "Session Configured");
-        createVirtualDisplay();
+        createVirtualDisplay(surface);
 
-        Log.d(TAG, mSession.getSessionDescription());
-        mSession.start();
+//        Log.d(TAG, mSession.getSessionDescription());
+//        mSession.start();
     }
 
     @Override

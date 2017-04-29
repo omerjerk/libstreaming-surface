@@ -18,6 +18,8 @@
 
 package net.majorkernelpanic.streaming.rtp;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,6 +79,7 @@ abstract public class AbstractPacketizer {
 	 * @param rtcpPort Destination port that will be used for RTCP
 	 */
 	public void setDestination(InetAddress dest, int rtpPort, int rtcpPort) {
+		Log.e("DERP", "setDestination="+dest);
 		socket.setDestination(dest, rtpPort, rtcpPort);		
 	}
 

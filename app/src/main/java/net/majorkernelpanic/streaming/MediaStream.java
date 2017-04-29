@@ -127,6 +127,7 @@ public abstract class MediaStream implements Stream {
 	 * @param dest The destination address of the stream 
 	 */	
 	public void setDestinationAddress(InetAddress dest) {
+		Log.e(TAG, "setDestinationAddress="+dest);
 		mDestination = dest;
 	}
 
@@ -256,6 +257,9 @@ public abstract class MediaStream implements Stream {
 	public synchronized void configure() throws IllegalStateException, IOException {
 		if (mStreaming) throw new IllegalStateException("Can't be called while streaming.");
 		if (mPacketizer != null) {
+			if (mDestination == null) {
+				mDestination = InetAddress.getByName("192.168.0.104");
+			}
 			mPacketizer.setDestination(mDestination, mRtpPort, mRtcpPort);
 			mPacketizer.getRtpSocket().setOutputStream(mOutputStream, mChannelIdentifier);
 		}
